@@ -23,36 +23,44 @@ import {
   filterSelector,
   sortSelector,
 } from 'redux/selectors';
+import { useEffect } from 'react';
+import { fetchContacts } from 'redux/operations';
 
 export function ContactList() {
   const dispatch = useDispatch();
 
-  const contacts = useSelector(contactsSelector);
-  const filter = useSelector(filterSelector);
-  const order = useSelector(sortSelector);
+  const { items, isLoading, error } = useSelector(contactsSelector);
+  console.log(items);
+  // const contacts = useSelector(contactsSelector);
+  // const filter = useSelector(filterSelector);
+  // const order = useSelector(sortSelector);
 
-  const filterFunc =
-    filter === '' ? _ => true : el => el.name.toLowerCase().includes(filter);
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
 
-  const sortFunc =
-    order === sortOrderConst.sortAZ
-      ? (a, b) => a.name.localeCompare(b.name)
-      : (a, b) => b.name.localeCompare(a.name);
+  // const filterFunc =
+  //   filter === '' ? _ => true : el => el.name.toLowerCase().includes(filter);
 
-  const filtered = contacts.filter(filterFunc).sort(sortFunc);
+  // const sortFunc =
+  //   order === sortOrderConst.sortAZ
+  //     ? (a, b) => a.name.localeCompare(b.name)
+  //     : (a, b) => b.name.localeCompare(a.name);
 
-  const onDeleteContact = user => {
-    services.Confirm.show(
-      `Delete contact`,
-      `Are you sure you want to delete contact ${user.name}?`,
-      'Yes',
-      'No',
-      () => {
-        services.Notify.info(`Contact ${user.name} was deleted`);
-        dispatch(deleteContact(user.id));
-      }
-    );
-  };
+  // const filtered = contacts.filter(filterFunc).sort(sortFunc);
+
+  // const onDeleteContact = user => {
+  //   services.Confirm.show(
+  //     `Delete contact`,
+  //     `Are you sure you want to delete contact ${user.name}?`,
+  //     'Yes',
+  //     'No',
+  //     () => {
+  //       services.Notify.info(`Contact ${user.name} was deleted`);
+  //       dispatch(deleteContact(user.id));
+  //     }
+  //   );
+  // };
 
   const onSortContacts = order => {
     return dispatch(sortOrder(order));
@@ -81,7 +89,13 @@ export function ContactList() {
       </SortOptions>
 
       <ContactListRender>
-        <ul>
+        <div>
+          {isLoading && <p>Loading tasks...</p>}
+          {error && <p>{error}</p>}
+          {<p>{items.length > 0 && JSON.stringify(items, null, 2)}</p>}
+        </div>
+
+        {/* <ul>
           {filtered.map(contact => (
             <List key={contact.id}>
               <Span>{contact.name}</Span> <Span>{contact.number}</Span>
@@ -90,13 +104,13 @@ export function ContactList() {
               </Button>
             </List>
           ))}
-        </ul>
-        {!Boolean(contacts.length) && (
+        </ul>  */}
+        {/* {!Boolean(contacts.length) && (
           <p>There are no contacts in your phonebook</p>
         )}
         {!Boolean(filtered.length) && Boolean(contacts.length) && (
           <p>No more contacts found</p>
-        )}
+        )} */}
       </ContactListRender>
     </ContactsListContainer>
   );

@@ -17,14 +17,14 @@ import * as services from 'services/notify';
 
 import { sortOrderConst } from 'constants';
 import { sortOrder } from 'redux/sortSlice';
-import { deleteContact } from 'redux/phonebookSlice';
+
 import {
   contactsSelector,
   filterSelector,
   sortSelector,
 } from 'redux/selectors';
 import { useEffect } from 'react';
-import { fetchContacts } from 'redux/operations';
+import { deleteContact, fetchContacts } from 'redux/operations';
 
 export function ContactList() {
   const dispatch = useDispatch();
@@ -32,35 +32,35 @@ export function ContactList() {
   const { items, isLoading, error } = useSelector(contactsSelector);
   console.log(items);
   // const contacts = useSelector(contactsSelector);
-  // const filter = useSelector(filterSelector);
-  // const order = useSelector(sortSelector);
+  const filter = useSelector(filterSelector);
+  const order = useSelector(sortSelector);
 
   useEffect(() => {
     dispatch(fetchContacts());
   }, [dispatch]);
 
-  // const filterFunc =
-  //   filter === '' ? _ => true : el => el.name.toLowerCase().includes(filter);
+  const filterFunc =
+    filter === '' ? _ => true : el => el.name.toLowerCase().includes(filter);
 
-  // const sortFunc =
-  //   order === sortOrderConst.sortAZ
-  //     ? (a, b) => a.name.localeCompare(b.name)
-  //     : (a, b) => b.name.localeCompare(a.name);
+  const sortFunc =
+    order === sortOrderConst.sortAZ
+      ? (a, b) => a.name.localeCompare(b.name)
+      : (a, b) => b.name.localeCompare(a.name);
 
-  // const filtered = contacts.filter(filterFunc).sort(sortFunc);
+  const filtered = items.filter(filterFunc).sort(sortFunc);
 
-  // const onDeleteContact = user => {
-  //   services.Confirm.show(
-  //     `Delete contact`,
-  //     `Are you sure you want to delete contact ${user.name}?`,
-  //     'Yes',
-  //     'No',
-  //     () => {
-  //       services.Notify.info(`Contact ${user.name} was deleted`);
-  //       dispatch(deleteContact(user.id));
-  //     }
-  //   );
-  // };
+  const onDeleteContact = user => {
+    services.Confirm.show(
+      `Delete contact`,
+      `Are you sure you want to delete contact ${user.name}?`,
+      'Yes',
+      'No',
+      () => {
+        services.Notify.info(`Contact ${user.name} was deleted`);
+        dispatch(deleteContact(user.id));
+      }
+    );
+  };
 
   const onSortContacts = order => {
     return dispatch(sortOrder(order));
@@ -89,28 +89,26 @@ export function ContactList() {
       </SortOptions>
 
       <ContactListRender>
-        <div>
-          {isLoading && <p>Loading tasks...</p>}
-          {error && <p>{error}</p>}
-          {<p>{items.length > 0 && JSON.stringify(items, null, 2)}</p>}
-        </div>
+        {isLoading && <p>Loading tasks...</p>}
+        {error && <p>{error}</p>}
 
-        {/* <ul>
+        <ul>
           {filtered.map(contact => (
             <List key={contact.id}>
-              <Span>{contact.name}</Span> <Span>{contact.number}</Span>
+              <Span contentEditable="true">{contact.name}</Span>{' '}
+              <Span>{contact.number}</Span>
               <Button type="button" onClick={() => onDeleteContact(contact)}>
                 <SvgIcon component={DeleteForeverIcon}></SvgIcon>
               </Button>
             </List>
           ))}
-        </ul>  */}
-        {/* {!Boolean(contacts.length) && (
+        </ul>
+        {!Boolean(items.length) && (
           <p>There are no contacts in your phonebook</p>
         )}
-        {!Boolean(filtered.length) && Boolean(contacts.length) && (
+        {!Boolean(filtered.length) && Boolean(items.length) && (
           <p>No more contacts found</p>
-        )} */}
+        )}
       </ContactListRender>
     </ContactsListContainer>
   );

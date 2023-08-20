@@ -3,10 +3,10 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import * as services from '../../services/notify';
 
-import { addContact } from 'redux/phonebookSlice';
 import { contactsSelector } from 'redux/selectors';
+import { addContact } from 'redux/operations';
 export function ContactForm() {
-  const contacts = useSelector(contactsSelector);
+  const { items } = useSelector(contactsSelector);
   const dispatch = useDispatch();
 
   const onFormSubmit = e => {
@@ -14,10 +14,10 @@ export function ContactForm() {
     const userName = e.currentTarget.elements.name.value.trim();
     const userNumber = e.currentTarget.elements.number.value.trim();
 
-    if (contacts.find(user => user.name === userName)) {
+    if (items.find(user => user.name === userName)) {
       return services.Notify.warning(`${userName} is already in contacts`);
     }
-    if (contacts.find(user => user.number === userNumber)) {
+    if (items.find(user => user.number === userNumber)) {
       return services.Notify.warning(
         `This number: ${userNumber} is already in contacts`
       );

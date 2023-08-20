@@ -93,6 +93,7 @@ const List = styled.li`
 const Span = styled.span`
   margin-right: 10px;
   width: 130px;
+  font-size: 12px;
 `;
 export {
   ContactsListContainer,

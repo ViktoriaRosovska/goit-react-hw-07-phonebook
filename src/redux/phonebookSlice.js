@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
-// import { initialState } from '../constants';
-import { nanoid } from 'nanoid';
+
+import { fetchContacts, addContact, deleteContact } from './operations';
 
 const phonebookSlice = createSlice({
   name: 'contacts',
@@ -9,46 +9,49 @@ const phonebookSlice = createSlice({
     isLoading: false,
     error: null,
   },
-  reducers: {
-    addContact: {
-      reducer(state, action) {
-        state.push(action.payload);
-      },
-      prepare(user) {
-        return {
-          payload: {
-            name: user.name,
-            number: user.number,
-            id: nanoid(),
-          },
-        };
-      },
-    },
-    deleteContact(state, action) {
-      const index = state.findIndex(user => user.id === action.payload);
-      state.splice(index, 1);
-    },
 
-    fetchingInProcess(state) {
+  extraReducers: {
+    [deleteContact.pending](state) {
       state.isLoading = true;
     },
-    fetchingSuccess(state, action) {
+    [deleteContact.fulfilled](state, action) {
+      state.isLoading = false;
+      state.error = null;
+
+      const index = state.items.findIndex(
+        task => task.id === action.payload.id
+      );
+      state.items.splice(index, 1);
+    },
+    [deleteContact.rejected](state, action) {
+      state.isLoading = false;
+      state.error = action.payload;
+    },
+    [addContact.pending](state) {
+      state.isLoading = true;
+    },
+    [addContact.fulfilled](state, action) {
+      state.isLoading = false;
+      state.error = null;
+      state.items.push(action.payload);
+    },
+    [addContact.rejected](state, action) {
+      state.isLoading = false;
+      state.error = action.payload;
+    },
+    [fetchContacts.pending](state, action) {
+      state.isLoading = true;
+    },
+    [fetchContacts.fulfilled](state, action) {
       state.isLoading = false;
       state.error = null;
       state.items = action.payload;
     },
-    fetchingError(state, action) {
+    [fetchContacts.rejected](state, action) {
       state.isLoading = false;
       state.error = action.payload;
     },
   },
 });
 
-export const {
-  addContact,
-  deleteContact,
-  fetchingInProcess,
-  fetchingSuccess,
-  fetchingError,
-} = phonebookSlice.actions;
 export const phonebookReducer = phonebookSlice.reducer;

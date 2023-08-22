@@ -26,12 +26,14 @@ import {
 import { useEffect } from 'react';
 import { deleteContact, fetchContacts } from 'redux/operations';
 
-export function ContactList() {
+export function ContactList({ showModal, onShowModalClick }) {
+  const isShowModal = contactId => {
+    onShowModalClick(contactId);
+  };
   const dispatch = useDispatch();
 
   const { items, isLoading, error } = useSelector(contactsSelector);
-  console.log(items);
-  // const contacts = useSelector(contactsSelector);
+
   const filter = useSelector(filterSelector);
   const order = useSelector(sortSelector);
 
@@ -94,9 +96,8 @@ export function ContactList() {
 
         <ul>
           {filtered.map(contact => (
-            <List key={contact.id}>
-              <Span contentEditable="true">{contact.name}</Span>{' '}
-              <Span>{contact.number}</Span>
+            <List key={contact.id} onClick={() => isShowModal(contact.id)}>
+              <Span>{contact.name}</Span> <Span>{contact.phone}</Span>
               <Button type="button" onClick={() => onDeleteContact(contact)}>
                 <SvgIcon component={DeleteForeverIcon}></SvgIcon>
               </Button>

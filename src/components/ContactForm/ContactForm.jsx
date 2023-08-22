@@ -12,19 +12,19 @@ export function ContactForm() {
   const onFormSubmit = e => {
     e.preventDefault();
     const userName = e.currentTarget.elements.name.value.trim();
-    const userNumber = e.currentTarget.elements.number.value.trim();
+    const userPhone = e.currentTarget.elements.phone.value.trim();
 
     if (items.find(user => user.name === userName)) {
       return services.Notify.warning(`${userName} is already in contacts`);
     }
-    if (items.find(user => user.number === userNumber)) {
+    if (items.find(user => user.phone === userPhone)) {
       return services.Notify.warning(
-        `This number: ${userNumber} is already in contacts`
+        `This number: ${userPhone} is already in contacts`
       );
     }
     const user = {
       name: userName,
-      number: userNumber,
+      phone: userPhone,
     };
 
     dispatch(addContact(user));
@@ -46,7 +46,7 @@ export function ContactForm() {
         <label htmlFor="phone">Number</label>
         <FormInput
           type="tel"
-          name="number"
+          name="phone"
           title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
           pattern="\+?\d{1,4}?[ .\-\s]?\(?\d{1,3}?\)?[ .\-\s]?\d{1,4}[ .\-\s]?\d{1,4}[ .\-\s]?\d{1,9}"
           required

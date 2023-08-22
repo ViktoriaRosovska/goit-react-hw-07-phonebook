@@ -88,6 +88,12 @@ const List = styled.li`
   justify-content: space-between;
   align-items: center;
   width: 300px;
+  padding: 2px;
+  cursor: pointer;
+  &:hover,
+  :focus {
+    color: #f26b94;
+  }
 `;
 
 const Span = styled.span`

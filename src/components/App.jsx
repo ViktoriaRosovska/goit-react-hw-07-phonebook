@@ -1,5 +1,3 @@
-// import * as services from 'services/notify';
-
 import {
   AddContactWrapper,
   ContactsWrapper,

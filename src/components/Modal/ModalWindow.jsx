@@ -1,20 +1,24 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { ModalContainer, Overlay } from './Modal.styled';
+import {
+  CloseModalButton,
+  FormButtonSave,
+  ModalContainer,
+  ModalHeader,
+  ModalLabel,
+  Overlay,
+} from './Modal.styled';
 import { contactsSelector } from 'redux/selectors';
-import { fetchContacts } from 'redux/operations';
-import { useEffect, useState } from 'react';
-
+import { editContact } from 'redux/operations';
+import { useState } from 'react';
+import { FormInput } from 'components/ContactForm/ContactForm.styled';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 export const ModalWindow = ({ onBackdropClose, contactId }) => {
-  const { items, isLoading, error } = useSelector(contactsSelector);
-  const [active, setActive] = useState(false);
+  const { items } = useSelector(contactsSelector);
   const [disabledBtn, setDisabledBtn] = useState(false);
-  const name = items.find(el => el.id === contactId).name;
-  const phone = items.find(el => el.id === contactId).phone;
+  const name = items.find(el => el.id === contactId)?.name ?? '';
+  const phone = items.find(el => el.id === contactId)?.phone ?? '';
 
   const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(fetchContacts());
-  }, [dispatch]);
 
   const onBackdrop = e => {
     if (e.target === e.currentTarget) {
@@ -24,36 +28,43 @@ export const ModalWindow = ({ onBackdropClose, contactId }) => {
 
   const onFormSubmit = e => {
     e.preventDefault();
-    const name = e.target.elements.name.value;
-    const phone = e.target.elements.phone.value;
+    const user = {
+      name: e.target.elements.name.value,
+      phone: e.target.elements.phone.value,
+      id: contactId,
+    };
     setDisabledBtn(true);
-
-    console.log(name, phone);
-    //делаем запрос в базу что б обновить пользователя
-    //dispatch(PutContacts)
+    dispatch(editContact(user));
   };
   return (
     <>
       <Overlay onClick={onBackdrop} id="Overlay">
         <ModalContainer>
-          <h2>Edit contact </h2>
+          <ModalHeader>Edit contact </ModalHeader>
           <form onSubmit={onFormSubmit}>
-            <input
+            <ModalLabel htmlFor="name">Name</ModalLabel>
+            <FormInput
               name="name"
+              id="name"
               type="text"
               defaultValue={`${name}`}
               onFocus={() => setDisabledBtn(false)}
             />
-            <input
+            <ModalLabel htmlFor="phone">Phone</ModalLabel>
+            <FormInput
+              id="phone"
               name="phone"
               type="text"
               defaultValue={`${phone}`}
               onFocus={() => setDisabledBtn(false)}
             />
-            <button type="submit" disabled={disabledBtn}>
+            <FormButtonSave type="submit" disabled={disabledBtn}>
               Save
-            </button>
+            </FormButtonSave>
           </form>
+          <CloseModalButton onClick={() => onBackdropClose()}>
+            <CloseRoundedIcon />
+          </CloseModalButton>
         </ModalContainer>
       </Overlay>
     </>

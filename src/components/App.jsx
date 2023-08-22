@@ -16,6 +16,7 @@ import { useState } from 'react';
 export function App() {
   const [showModal, setShowModal] = useState(false);
   const [contactId, setContactId] = useState(null);
+
   const onShowModalClick = contactId => {
     setContactId(contactId);
     setShowModal(true);
@@ -34,12 +35,10 @@ export function App() {
         <ContactsWrapper>
           <Filter />
           <HeaderContacts>Contacts</HeaderContacts>
-          <ContactList
-            showModal={showModal}
-            onShowModalClick={onShowModalClick}
-          />
+          <ContactList onShowModalClick={onShowModalClick} />
         </ContactsWrapper>
       </Container>
+
       {showModal && (
         <Modal onBackdropClose={onBackdropClose} contactId={contactId} />
       )}

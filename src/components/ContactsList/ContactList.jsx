@@ -25,11 +25,10 @@ import {
 } from 'redux/selectors';
 import { useEffect } from 'react';
 import { deleteContact, fetchContacts } from 'redux/operations';
+import { Loader } from 'components/Loader';
 
-export function ContactList({ showModal, onShowModalClick }) {
-  const isShowModal = contactId => {
-    onShowModalClick(contactId);
-  };
+export function ContactList({ onShowModalClick }) {
+  const isShowModal = contactId => onShowModalClick(contactId);
   const dispatch = useDispatch();
 
   const { items, isLoading, error } = useSelector(contactsSelector);
@@ -51,7 +50,8 @@ export function ContactList({ showModal, onShowModalClick }) {
 
   const filtered = items.filter(filterFunc).sort(sortFunc);
 
-  const onDeleteContact = user => {
+  const onDeleteContact = (user, e) => {
+    e.stopPropagation();
     services.Confirm.show(
       `Delete contact`,
       `Are you sure you want to delete contact ${user.name}?`,
@@ -91,20 +91,25 @@ export function ContactList({ showModal, onShowModalClick }) {
       </SortOptions>
 
       <ContactListRender>
-        {isLoading && <p>Loading tasks...</p>}
+        {isLoading && <Loader />}
         {error && <p>{error}</p>}
 
-        <ul>
-          {filtered.map(contact => (
-            <List key={contact.id} onClick={() => isShowModal(contact.id)}>
-              <Span>{contact.name}</Span> <Span>{contact.phone}</Span>
-              <Button type="button" onClick={() => onDeleteContact(contact)}>
-                <SvgIcon component={DeleteForeverIcon}></SvgIcon>
-              </Button>
-            </List>
-          ))}
-        </ul>
-        {!Boolean(items.length) && (
+        {!isLoading && (
+          <ul>
+            {filtered.map(contact => (
+              <List key={contact.id} onClick={e => isShowModal(contact.id)}>
+                <Span>{contact.name}</Span> <Span>{contact.phone}</Span>
+                <Button
+                  type="button"
+                  onClick={e => onDeleteContact(contact, e)}
+                >
+                  <SvgIcon component={DeleteForeverIcon}></SvgIcon>
+                </Button>
+              </List>
+            ))}
+          </ul>
+        )}
+        {!Boolean(items.length) && !isLoading && (
           <p>There are no contacts in your phonebook</p>
         )}
         {!Boolean(filtered.length) && Boolean(items.length) && (

@@ -1,6 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-import { fetchContacts, addContact, deleteContact } from './operations';
+import {
+  fetchContacts,
+  addContact,
+  deleteContact,
+  editContact,
+} from './operations';
 
 const phonebookSlice = createSlice({
   name: 'contacts',
@@ -11,6 +16,29 @@ const phonebookSlice = createSlice({
   },
 
   extraReducers: {
+    [editContact.pending](state) {
+      state.isLoading = true;
+    },
+    [editContact.fulfilled](state, action) {
+      state.isLoading = false;
+      state.error = null;
+
+      const index = state.items.findIndex(
+        contact => contact.id === action.payload.id
+      );
+      state.items.filter(el => {
+        if (el.id === action.payload.id) {
+          const prevContact = state.items[index];
+          const newContact = { ...prevContact, ...action.payload };
+          state.items.splice(index, 1, newContact);
+        }
+        return state.items[index];
+      });
+    },
+    [editContact.rejected](state, action) {
+      state.isLoading = false;
+      state.error = action.payload;
+    },
     [deleteContact.pending](state) {
       state.isLoading = true;
     },
@@ -19,7 +47,7 @@ const phonebookSlice = createSlice({
       state.error = null;
 
       const index = state.items.findIndex(
-        task => task.id === action.payload.id
+        contact => contact.id === action.payload.id
       );
       state.items.splice(index, 1);
     },

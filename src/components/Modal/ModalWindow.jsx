@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types';
+
 import { useDispatch, useSelector } from 'react-redux';
 import {
   CloseModalButton,
@@ -12,8 +14,9 @@ import { editContact } from 'redux/operations';
 import { useState } from 'react';
 import { FormInput } from 'components/ContactForm/ContactForm.styled';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+
 export const ModalWindow = ({ onBackdropClose, contactId }) => {
-  const { items } = useSelector(contactsSelector);
+  const items = useSelector(contactsSelector);
   const [disabledBtn, setDisabledBtn] = useState(false);
   const name = items.find(el => el.id === contactId)?.name ?? '';
   const phone = items.find(el => el.id === contactId)?.phone ?? '';
@@ -35,6 +38,7 @@ export const ModalWindow = ({ onBackdropClose, contactId }) => {
     };
     setDisabledBtn(true);
     dispatch(editContact(user));
+    onBackdropClose();
   };
   return (
     <>
@@ -69,4 +73,8 @@ export const ModalWindow = ({ onBackdropClose, contactId }) => {
       </Overlay>
     </>
   );
+};
+ModalWindow.propTypes = {
+  onBackdropClose: PropTypes.func.isRequired,
+  contactId: PropTypes.string.isRequired,
 };

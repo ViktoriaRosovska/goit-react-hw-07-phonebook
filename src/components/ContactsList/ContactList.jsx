@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import {
   ContactsListContainer,
   ContactListRender,
@@ -8,6 +9,7 @@ import {
 } from './ContactList.styled';
 
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import { SvgIcon } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
@@ -20,7 +22,9 @@ import { sortOrder } from 'redux/sortSlice';
 
 import {
   contactsSelector,
+  errorSelector,
   filterSelector,
+  isLoadingSelector,
   sortSelector,
 } from 'redux/selectors';
 import { useEffect } from 'react';
@@ -31,9 +35,11 @@ export function ContactList({ onShowModalClick }) {
   const isShowModal = contactId => onShowModalClick(contactId);
   const dispatch = useDispatch();
 
-  const { items, isLoading, error } = useSelector(contactsSelector);
+  const items = useSelector(contactsSelector);
+  const isLoading = useSelector(isLoadingSelector);
+  const error = useSelector(errorSelector);
 
-  const filter = useSelector(filterSelector);
+  const filter = useSelector(filterSelector).toLowerCase();
   const order = useSelector(sortSelector);
 
   useEffect(() => {
@@ -94,11 +100,17 @@ export function ContactList({ onShowModalClick }) {
         {isLoading && <Loader />}
         {error && <p>{error}</p>}
 
-        {!isLoading && (
+        {!isLoading && !error && (
           <ul>
             {filtered.map(contact => (
-              <List key={contact.id} onClick={e => isShowModal(contact.id)}>
+              <List key={contact.id}>
                 <Span>{contact.name}</Span> <Span>{contact.phone}</Span>
+                <Button type="button" onClick={() => isShowModal(contact.id)}>
+                  <SvgIcon
+                    style={{ fontSize: 'medium' }}
+                    component={EditRoundedIcon}
+                  ></SvgIcon>
+                </Button>
                 <Button
                   type="button"
                   onClick={e => onDeleteContact(contact, e)}
@@ -119,3 +131,7 @@ export function ContactList({ onShowModalClick }) {
     </ContactsListContainer>
   );
 }
+
+ContactList.propTypes = {
+  onShowModalClick: PropTypes.func.isRequired,
+};

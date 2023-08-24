@@ -20,7 +20,7 @@ export function App() {
     setShowModal(true);
   };
 
-  const onBackdropClose = e => {
+  const onBackdropClose = () => {
     setShowModal(false);
   };
   return (

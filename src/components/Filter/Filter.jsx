@@ -13,7 +13,7 @@ export function Filter() {
   const filterQuery = useSelector(filterSelector);
 
   const onFilterContact = e => {
-    const filter = e.target.value.toLowerCase().trim();
+    const filter = e.target.value.trim();
     dispatch(filteredQuery({ value: filter }));
   };
   return (

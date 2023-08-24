@@ -5,8 +5,9 @@ import * as services from '../../services/notify';
 
 import { contactsSelector } from 'redux/selectors';
 import { addContact } from 'redux/operations';
+
 export function ContactForm() {
-  const { items } = useSelector(contactsSelector);
+  const items = useSelector(contactsSelector);
   const dispatch = useDispatch();
 
   const onFormSubmit = e => {
@@ -14,7 +15,9 @@ export function ContactForm() {
     const userName = e.currentTarget.elements.name.value.trim();
     const userPhone = e.currentTarget.elements.phone.value.trim();
 
-    if (items.find(user => user.name === userName)) {
+    if (
+      items.find(user => user.name.toLowerCase() === userName.toLowerCase())
+    ) {
       return services.Notify.warning(`${userName} is already in contacts`);
     }
     if (items.find(user => user.phone === userPhone)) {
